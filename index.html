@@ -190,7 +190,48 @@
             console.log(error)
         }
     }
+    
+    async function createProduct() {
+        try {
+            const payload = getFormData()
+            const response = await fetch(API_URL,{
+                method: 'POST',
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+            const data = await response.json()
 
+
+        } catch (error) {
+            
+        }
+    }
+
+    async function replaceProduct() {
+        const id = validateId()
+        if(!id) return
+
+        try {
+            const payload = getFormData()
+            const response = await fetch(`${API_URL}/${id}`,{
+                    method:"PUT",
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    body: JSON.stringify(payload)
+            })
+            const data = await response.json()
+            
+        } catch (error) {
+            
+        }
+    
+    }
+    async function validateId(params) {
+      
+    }
     loadProducts()
     
     
