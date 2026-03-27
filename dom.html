@@ -30,7 +30,11 @@
     </form>
 
     <h2>FORMULARIO MEDIO</h2>
-
+    <form id="validacion">
+        <input id="inputEmail" type="text" placeholder="email">
+        <button  id="btnSbmt" type="submit">Enviar</button>
+    </form>
+    <p id="mensaje"></p>
     <script>
         const input = document.getElementById('nombre')
         const boton = document.getElementById('btnMostrar')
@@ -39,6 +43,10 @@
         const btnText = document.getElementById('reseteo')
         const form = document.getElementById('miFormulario')
         const btnColor = document.getElementById('colorBtn')
+        const email = document.getElementById('inputEmail') 
+        const btnSbmt = document.getElementById('btnSbmt') 
+        const formValidacion = document.getElementById('validacion')
+        const mensaje = document.getElementById('mensaje') 
         boton.addEventListener('click',()=>{
             resultado.textContent = 'Hola ' + input.value
         })
@@ -57,6 +65,19 @@
         document.body.style.color = activo === true? 'black':'white'
            activo =!activo
         })
+        formValidacion.addEventListener('submit',(e)=>{
+            e.preventDefault()
+            // if (email.value === "") {
+            //     mensaje.textContent = 'El campo está vacio, es obligatorio llenar el campo'
+            //     mensaje.style.color ="red"
+            // } else {
+            //     mensaje.textContent = 'Formulario correcto'
+            //     mensaje.style.color ="green"
+            // }
+            mensaje.textContent = (email.value === ""?'El campo está vacio, es obligatorio llenar el campo' : 'Formulario correcto')
+            mensaje.style.color = (email.value === ""?'red' : 'green')
+        })
+
     </script>
 </body>
 </html>
