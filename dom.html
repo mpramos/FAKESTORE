@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
+    <div style="padding: 10px;margin: 5px; text-align: end;display: flex;justify-content: space-between;">
+        <h3>Logo</h3>
+        <div>
+            <button id="colorBtn">cambiar color</button>
+        </div>
+
+    </div>
     <h1>Mi proyecto con DOM</h1>
     <input id="nombre" type="text">
     <button id="btnMostrar">Mostrar</button>
@@ -13,12 +21,24 @@
 
     <input type="text" id="texto" placeholder="Escribe algo">
     <button id="reseteo">resetear</button>
+
+    <h2>FORMULARIO</h2>
+    <form id="miFormulario" >
+        <input type="text" placeholder="Nombre">
+        <button type="submit" id="btnSend">Enviar</button>
+   
+    </form>
+
+    <h2>FORMULARIO MEDIO</h2>
+
     <script>
         const input = document.getElementById('nombre')
         const boton = document.getElementById('btnMostrar')
         const resultado = document.getElementById('resultado')
         const inputTexto= document.getElementById('texto')
         const btnText = document.getElementById('reseteo')
+        const form = document.getElementById('miFormulario')
+        const btnColor = document.getElementById('colorBtn')
         boton.addEventListener('click',()=>{
             resultado.textContent = 'Hola ' + input.value
         })
@@ -26,8 +46,17 @@
             console.log('hola')
             inputTexto.value =''
         })
+        form.addEventListener('submit',()=>{
+            event.preventDefault()//evitar que recargue mi pagina
+        })
         
-        
+        let activo = false
+
+        btnColor.addEventListener('click',()=>{
+        document.body.style.backgroundColor = activo === true? 'white':'black'
+        document.body.style.color = activo === true? 'black':'white'
+           activo =!activo
+        })
     </script>
 </body>
 </html>
