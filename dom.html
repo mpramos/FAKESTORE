@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Mi proyecto con DOM</h1>
+    <input id="nombre" type="text">
+    <button id="btnMostrar">Mostrar</button>
+    <p id="resultado"></p>
+
+    <input type="text" id="texto" placeholder="Escribe algo">
+    <button id="reseteo">resetear</button>
+    <script>
+        const input = document.getElementById('nombre')
+        const boton = document.getElementById('btnMostrar')
+        const resultado = document.getElementById('resultado')
+        const inputTexto= document.getElementById('texto')
+        const btnText = document.getElementById('reseteo')
+        boton.addEventListener('click',()=>{
+            resultado.textContent = 'Hola ' + input.value
+        })
+        btnText.addEventListener('dblclick',()=>{
+            console.log('hola')
+            inputTexto.value =''
+        })
+        
+        
+    </script>
+</body>
+</html>
