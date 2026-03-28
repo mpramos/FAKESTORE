@@ -127,7 +127,7 @@
 <script>
     // inputs
     const API_URL = "https://fakestoreapi.com/products"
-    const productIdProducto = document.getElementById('productId')
+    const productIdInput = document.getElementById('productId')
     const titleInput = document.getElementById('title')
     const priceInput = document.getElementById('price')
     const categoryInput = document.getElementById('category')
@@ -157,6 +157,15 @@
             category : categoryInput.value.trim()
         }
     }
+    function fillForm(producto) {
+        productIdInput.value = producto.id ?? ""
+        titleInput.value = producto.title ?? ""
+        priceInput.value = producto.price ?? ""
+        descriptionInput.value = producto.description ?? ""
+        imageInput.value = producto.image ?? ""
+        categoryInput.value = producto.category ?? ""
+    }
+    
     function clearForm() {
         productIdProducto.value = ""
         titleInput.value = ""
@@ -165,8 +174,15 @@
         imageInput.value = ""
         categoryInput.value = ""
     }
-
     //todo  validar
+    async function validateId() {
+      const id = Number(productIdInput.value)
+      if(!id){
+        alert("Debes colocar un ID válido")
+        return null
+      }
+      return id
+    }
     //cargar productos
     function renderProducts(products) {
         productsContainer.innerHTML = ""
@@ -187,9 +203,9 @@
                             class = "w-full h-48 object-contain rounded-xl bg-white p-4"
                             />
 
-                    <div class="mt-4">
-                        <h3 class="font-semibold text-slate-800 line-clamp-2 min-h-[48px]">${producto.title}</h3>
-                        <p class="text-sm text-slate-500 mt-1">${producto.category}</p>
+                            <div class="mt-4">
+                                <h3 class="font-semibold text-slate-800 line-clamp-2 min-h-[48px]">${producto.title}</h3>
+                                <p class="text-sm text-slate-500 mt-1">${producto.category}</p>
                         <p class="text-lg font-bold text-sky-700 mt-2">${producto.price}</p>
 
                         <div class="flex gap-2 mt-4">
@@ -204,7 +220,7 @@
                             data-id="${producto.id}"
                             >Elminar</button>
                         </div>
-                    </div>
+                        </div>
                             `
             productsContainer.appendChild(card)
         });
@@ -213,8 +229,8 @@
         try {
             const response = await fetch(API_URL)
             const data = await response.json()
-            console.log(data)
-            renderProducts(data)
+            allProducts = data
+            renderProducts(allProducts)
         } catch (error) {
             console.log(error)
         }
@@ -222,7 +238,6 @@
     
     async function createProduct() {
         console.log('createProduct');
-        
         try {
             const payload = getFormData()
             const response = await fetch(API_URL,{
@@ -233,10 +248,8 @@
                 body: JSON.stringify(payload)
             })
             const data = await response.json()
-
-            
         } catch (error) {
-            
+            console.log('error',error.message)
         }
     }
     
@@ -255,9 +268,8 @@
                     body: JSON.stringify(payload)
                 })
                 const data = await response.json()
-            
             } catch (error) {
-            
+                console.log('error', error.message)
             }
             
         }
@@ -282,9 +294,8 @@
             })
             
             const data = await response.json()
-            
         } catch (error) {
-            
+            console.log('error', error.message)
         }
      }
      
@@ -298,12 +309,9 @@
                 })
                 const data = await response.json()
             } catch (error) {
-                
+                 console.log('error', error.message)
             }
      }
-    async function validateId(params) {
-      
-    }
 
     //Eventos de botones principales
     btnLoad.addEventListener('click', loadProducts)
@@ -313,6 +321,31 @@
     btnDelete.addEventListener('click', ()=> deleteProduct())
     btnClear.addEventListener('click', clearForm)
     
+
+    //Delegación de eventos en cards
+     productsContainer.addEventListener('click',(event)=>{
+        const button = event.target.closest("button")
+        if(!button) return
+        const action = button.dataset.action
+        const id = Number(button.dataset.id)
+
+        const selectedProduct = allProducts.find(producto=>producto.id == id)
+
+        if (action === "edit" && selectedProduct) {
+            fillForm(selectedProduct)
+            window.scrollTo({top:0,behavior:"smooth"})
+        } 
+
+        if(action === 'remove'){
+            deleteProduct(id)
+        }
+     })
+     //Buscador
+     searchInput.addEventListener("input",()=>{
+        const term = searchInput.value.toLowerCase().trim()
+        const filtered = allProducts.filter(producto=>producto.title.toLowerCase().includes(term))
+        renderProducts(filtered)
+     })
     //cargaInicial
     loadProducts()
     
