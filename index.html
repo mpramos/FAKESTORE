@@ -45,7 +45,7 @@
                     >
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Categoria</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
                     <input
                     id="category"
                     type="text"
@@ -93,7 +93,8 @@
             <button
             id="btnClear"
             class="bg-slate-500 hover:bg-slate-600 rounded-xl border-slate-300 px-4 py-2 font-medium text-white"
-            >Limpiar</button>
+            >Limpiar
+         </button>
         </div>
     </section>
     <!-- LISTADO -->
@@ -108,6 +109,7 @@
                 class="rounded-xl border border-slate-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
                 >
                 <button
+                id="btnLoad"
                 class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2 rounded-xl font-medium"
                 >
                 Cargar productos
@@ -116,7 +118,7 @@
     </div>
     <div
     id="productsContainer"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
     >
     
 </div>
@@ -138,9 +140,14 @@
     const btnPatch = document.getElementById('btnPatch')
     const btnDelete = document.getElementById('btnDelete')
     const btnClear = document.getElementById('btnClear')
+    const btnLoad = document.getElementById('btnLoad')
+
     
     const productsContainer = document.getElementById('productsContainer')
     const searchInput = document.getElementById('searchInput')
+
+    let allProducts = []
+
     function getFormData() {
         return {
             title: titleInput.value.trim(),
@@ -172,12 +179,34 @@
                 }
                 products.forEach(producto => {
                     const card = document.createElement('article')
+                    card.className = "bg-slate-50 rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-lg transition"
                     card.innerHTML = `
-                        <img src="${producto.image}" alt="">
-                        <p>${producto.title}</p>
-                                 
+                        <img 
+                            src="${producto.image}"
+                            alt="${producto.title}"
+                            class = "w-full h-48 object-contain rounded-xl bg-white p-4"
+                            />
+
+                    <div class="mt-4">
+                        <h3 class="font-semibold text-slate-800 line-clamp-2 min-h-[48px]">${producto.title}</h3>
+                        <p class="text-sm text-slate-500 mt-1">${producto.category}</p>
+                        <p class="text-lg font-bold text-sky-700 mt-2">${producto.price}</p>
+
+                        <div class="flex gap-2 mt-4">
+                            <button
+                            class = "flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-sm"
+                            data-action="edit"
+                            data-id="${producto.id}"
+                            >Cargar</button>
+                            <button
+                            class = "flex-1 bg-rose-600 hover:bg-rose-700  text-white py-2 rounded-xl text-sm"
+                            data-action="remove"
+                            data-id="${producto.id}"
+                            >Elminar</button>
+                        </div>
+                    </div>
                             `
-                            productsContainer.appendChild(card)
+            productsContainer.appendChild(card)
         });
     }
     async function loadProducts() {
@@ -192,6 +221,8 @@
     }
     
     async function createProduct() {
+        console.log('createProduct');
+        
         try {
             const payload = getFormData()
             const response = await fetch(API_URL,{
@@ -203,16 +234,17 @@
             })
             const data = await response.json()
 
-
+            
         } catch (error) {
             
         }
     }
-
+    
     async function replaceProduct() {
+        console.log('replaceProduct');
         const id = validateId()
         if(!id) return
-
+        
         try {
             const payload = getFormData()
             const response = await fetch(`${API_URL}/${id}`,{
@@ -221,17 +253,67 @@
                         "Content-Type":"application/json"
                     },
                     body: JSON.stringify(payload)
+                })
+                const data = await response.json()
+            
+            } catch (error) {
+            
+            }
+            
+        }
+     async function updateProductPartially() {
+         console.log('updateProductPartially');
+         const id = validateId()
+         if (!id) return
+        try {
+            const payload = {}
+            if (titleInput.value.trim()) payload.title = titleInput.value.trim()
+            if (priceInput.value) payload.price = Number(priceInput.value)
+            if (descriptionInput.value.trim()) payload.description = descriptionInput.value.trim()
+            if (imageInput.value.trim()) payload.image = imageInput.value.trim()
+            if (categoryInput.value.trim()) payload.category = categoryInput.value.trim()
+
+            const response = await fetch(`${API_URL}/${id}`,{
+                method: "PATCH",
+                headers:{
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
             })
+            
             const data = await response.json()
             
         } catch (error) {
             
         }
-    
-    }
+     }
+     
+     async function deleteProduct(idFromButton = null) {
+         console.log('deleteProduct');
+            const id = idFromButton || validateId()
+            if(!id) return
+            try {
+                const response = await fetch(`${API_URL}/${id}`,{
+                    method : "DELETE"
+                })
+                const data = await response.json()
+            } catch (error) {
+                
+            }
+     }
     async function validateId(params) {
       
     }
+
+    //Eventos de botones principales
+    btnLoad.addEventListener('click', loadProducts)
+    btnCreate.addEventListener('click', createProduct)
+    btnPut.addEventListener('click', replaceProduct)
+    btnPatch.addEventListener('click', updateProductPartially)
+    btnDelete.addEventListener('click', ()=> deleteProduct())
+    btnClear.addEventListener('click', clearForm)
+    
+    //cargaInicial
     loadProducts()
     
     
